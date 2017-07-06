@@ -1,11 +1,10 @@
 version: 0.2
- 
+
 phases:
   install:
     commands:
-      - echo CODEBUILD_SRC_DIR $CODEBUILD_SRC_DIR
-      - echo $CODEBUILD_SOURCE_REPO_URL $CODEBUILD_SOURCE_VERSION
-      - echo CODEBUILD_RESOLVED_SOURCE_VERSION $CODEBUILD_RESOLVED_SOURCE_VERSION
+      - echo git:"$CODEBUILD_SOURCE_REPO_URL" and branch:"$CODEBUILD_SOURCE_VERSION"
+      - apt-get install zip
   pre_build:
     commands:
       - echo Build started on `date`
@@ -18,7 +17,8 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      - zip -r WebApp.zip ./src/WebApp/bin/Release/netcoreapp1.1
 artifacts:
-  discard-paths: no
+  discard-paths: yes
   files:
-    - '**/*'
+    - '**/*.zip'
