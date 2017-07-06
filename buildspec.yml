@@ -1,0 +1,19 @@
+version: 0.2
+ 
+phases:
+  pre_build:
+    commands:
+      - echo Build started on `date`
+  build:
+    commands:
+      - cd src
+      - dotnet restore
+      - dotnet build
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  base-directory: 'scr'
+  files:
+    - '**/*'
+  discard-paths: yes
