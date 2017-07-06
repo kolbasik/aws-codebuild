@@ -16,4 +16,4 @@ phases:
 artifacts:
   discard-paths: yes
   files:
-    - 'src\WebApp\bin\Release\netcoreapp1.1\*'
+    - src\WebApp\bin\Release\netcoreapp1.1\*
