@@ -13,7 +13,8 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
+      - echo $CODEBUILD_SRC_DIR
 artifacts:
-  discard-paths: yes
+  discard-paths: no
   files:
-    - src\WebApp\bin\Release\netcoreapp1.1\*
+    - '**/*'
