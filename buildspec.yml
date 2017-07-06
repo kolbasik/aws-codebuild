@@ -1,6 +1,11 @@
 version: 0.2
  
 phases:
+  install:
+    commands:
+      - echo CODEBUILD_SRC_DIR $CODEBUILD_SRC_DIR
+      - echo $CODEBUILD_SOURCE_REPO_URL $CODEBUILD_SOURCE_VERSION
+      - echo CODEBUILD_RESOLVED_SOURCE_VERSION $CODEBUILD_RESOLVED_SOURCE_VERSION
   pre_build:
     commands:
       - echo Build started on `date`
@@ -13,7 +18,6 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - echo $CODEBUILD_SRC_DIR
 artifacts:
   discard-paths: no
   files:
