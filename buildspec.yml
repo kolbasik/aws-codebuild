@@ -8,12 +8,12 @@ phases:
     commands:
       - cd src
       - dotnet restore
-      - dotnet build
+      - dotnet build -c Release
       - cd ..
   post_build:
     commands:
       - echo Build completed on `date`
 artifacts:
-  discard-paths: no
+  discard-paths: yes
   files:
-    - '**/*'
+    - 'src\WebApp\bin\Release\netcoreapp1.1\*'
