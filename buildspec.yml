@@ -9,6 +9,7 @@ phases:
       - cd src
       - dotnet restore
       - dotnet build
+      - cd ..
   post_build:
     commands:
       - echo Build completed on `date`
