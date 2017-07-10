@@ -24,6 +24,5 @@ phases:
 artifacts:
   discard-paths: no
   files:
-    - '*/Release/**/*'
     - '**/*.zip'
     - '*.yml'

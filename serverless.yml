@@ -10,7 +10,7 @@ Resources:
     Properties:
       Handler: 'Lambda1::Lambda1.LambdaEntryPoint::FunctionHandlerAsync'
       Runtime: dotnetcore1.0
-      CodeUri: './src/Lambda1/bin/Release/netcoreapp1.0/'
+      CodeUri: 'Lambda1.zip'
       MemorySize: 256
       Timeout: 30
       Role: null
@@ -27,7 +27,7 @@ Resources:
     Properties:
       Handler: 'Lambda2::Lambda2.LambdaEntryPoint::FunctionHandlerAsync'
       Runtime: dotnetcore1.0
-      CodeUri: './src/Lambda2/bin/Release/netcoreapp1.0/'
+      CodeUri: 'Lambda2.zip'
       MemorySize: 256
       Timeout: 30
       Role: null
