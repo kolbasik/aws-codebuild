@@ -21,7 +21,6 @@ phases:
       - cd $CODEBUILD_SRC_DIR/src/Lambda1/bin/Release/netcoreapp1.0 && zip -r $CODEBUILD_SRC_DIR/Lambda1.zip .
       - cd $CODEBUILD_SRC_DIR/src/Lambda2/bin/Release/netcoreapp1.0 && zip -r $CODEBUILD_SRC_DIR/Lambda2.zip .
       - cd $CODEBUILD_SRC_DIR
-      - aws cloudformation package --template-file serverless.yml --output-template-file serverless-output.yml --s3-bucket kolbasik --s3-prefix Package
 artifacts:
   discard-paths: no
   files:
