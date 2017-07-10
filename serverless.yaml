@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+Transform: 'AWS::Serverless-2016-10-31'
+Description: >-
+  An AWS Serverless Application that uses the ASP.NET Core framework running in
+  Amazon Lambda.
+
+Resources:
+  Lambda1:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: 'Lambda1::Lambda1.LambdaEntryPoint::FunctionHandlerAsync'
+      Runtime: dotnetcore1.0
+      CodeUri: './Lambda1/bin/Release/netcoreapp1.0/'
+      MemorySize: 256
+      Timeout: 30
+      Role: null
+      Policies:
+        - AWSLambdaFullAccess
+      Events:
+        PutResource:
+          Type: Api
+          Properties:
+            Path: '/{proxy+}'
+            Method: ANY
+  Lambda2:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      Handler: 'Lambda2::Lambda2.LambdaEntryPoint::FunctionHandlerAsync'
+      Runtime: dotnetcore1.0
+      CodeUri: './Lambda1/bin/Release/netcoreapp1.0/'
+      MemorySize: 256
+      Timeout: 30
+      Role: null
+      Policies:
+        - AWSLambdaFullAccess
+      Events:
+        PutResource:
+          Type: Api
+          Properties:
+            Path: '/{proxy+}'
+            Method: ANY
+

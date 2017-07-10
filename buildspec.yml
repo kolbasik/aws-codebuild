@@ -18,8 +18,11 @@ phases:
     commands:
       - echo Build completed on `date`
       - cd $CODEBUILD_SRC_DIR/src/WebApp/bin/Release/netcoreapp1.1 && zip -r WebApp.zip .
+      - cd $CODEBUILD_SRC_DIR/src/Lambda1/bin/Release/netcoreapp1.0 && zip -r Lambda1.zip .
+      - cd $CODEBUILD_SRC_DIR/src/Lambda2/bin/Release/netcoreapp1.1 && zip -r Lambda1.zip .
       - cd $CODEBUILD_SRC_DIR
 artifacts:
   discard-paths: yes
   files:
     - '**/*.zip'
+    - '*.yaml'
