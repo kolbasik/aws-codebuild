@@ -14,13 +14,14 @@ phases:
       - cd src
       - dotnet restore
       - dotnet build -c Release
+      - dotnet publish -c Release
       - cd ..
   post_build:
     commands:
       - echo Build completed on `date`
-      - cd $CODEBUILD_SRC_DIR/src/WebApp/bin/Release/netcoreapp1.1 && zip -r $CODEBUILD_SRC_DIR/WebApp.zip .
-      - cd $CODEBUILD_SRC_DIR/src/Lambda1/bin/Release/netcoreapp1.0 && zip -r $CODEBUILD_SRC_DIR/Lambda1.zip .
-      - cd $CODEBUILD_SRC_DIR/src/Lambda2/bin/Release/netcoreapp1.0 && zip -r $CODEBUILD_SRC_DIR/Lambda2.zip .
+      - cd $CODEBUILD_SRC_DIR/src/WebApp/bin/Release/netcoreapp1.1/publish && zip -r $CODEBUILD_SRC_DIR/WebApp.zip .
+      - cd $CODEBUILD_SRC_DIR/src/Lambda1/bin/Release/netcoreapp1.0/publish && zip -r $CODEBUILD_SRC_DIR/Lambda1.zip .
+      - cd $CODEBUILD_SRC_DIR/src/Lambda2/bin/Release/netcoreapp1.0/publish && zip -r $CODEBUILD_SRC_DIR/Lambda2.zip .
       - cd $CODEBUILD_SRC_DIR
       - aws cloudformation package --template-file serverless.yml --output-template-file serverless-output.yml --s3-bucket $CLOUDFORMATION_PACKAGE_S3BUSKET99 --s3-prefix $CLOUDFORMATION_PACKAGE_S3PREFIX99
 artifacts:
