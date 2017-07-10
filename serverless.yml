@@ -20,7 +20,7 @@ Resources:
         PutResource:
           Type: Api
           Properties:
-            Path: '/{proxy+}'
+            Path: 'Lambda1/{proxy+}'
             Method: ANY
   Lambda2:
     Type: 'AWS::Serverless::Function'
@@ -37,6 +37,6 @@ Resources:
         PutResource:
           Type: Api
           Properties:
-            Path: '/{proxy+}'
+            Path: 'Lambda2/{proxy+}'
             Method: ANY
 
