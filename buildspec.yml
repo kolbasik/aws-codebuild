@@ -3,6 +3,7 @@ version: 0.2
 phases:
   install:
     commands:
+      - printenv
       - echo git:"$CODEBUILD_SOURCE_REPO_URL" and branch:"$CODEBUILD_SOURCE_VERSION"
       - apt-get install zip
   pre_build:
@@ -21,7 +22,7 @@ phases:
       - cd $CODEBUILD_SRC_DIR/src/Lambda1/bin/Release/netcoreapp1.0 && zip -r $CODEBUILD_SRC_DIR/Lambda1.zip .
       - cd $CODEBUILD_SRC_DIR/src/Lambda2/bin/Release/netcoreapp1.0 && zip -r $CODEBUILD_SRC_DIR/Lambda2.zip .
       - cd $CODEBUILD_SRC_DIR
-      - aws cloudformation package --template-file serverless.yml --output-template-file serverless-output.yml --s3-bucket $CLOUDFORMATION_PACKAGE_S3BUSKET --s3-prefix $CLOUDFORMATION_PACKAGE_S3PREFIX
+      - aws cloudformation package --template-file serverless.yml --output-template-file serverless-output.yml --s3-bucket $CLOUDFORMATION_PACKAGE_S3BUSKET99 --s3-prefix $CLOUDFORMATION_PACKAGE_S3PREFIX99
 artifacts:
   discard-paths: no
   files:
