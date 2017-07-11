@@ -16,6 +16,9 @@ Resources:
       Role: null
       Policies:
         - AWSLambdaFullAccess
+      Environment:
+        Variables:
+          ASPNETCORE_VIRTUAL_PATH: '/Lambda1'
       Events:
         PutResource:
           Type: Api
@@ -33,6 +36,9 @@ Resources:
       Role: null
       Policies:
         - AWSLambdaFullAccess
+      Environment:
+        Variables:
+          ASPNETCORE_VIRTUAL_PATH: '/Lambda2'
       Events:
         PutResource:
           Type: Api
