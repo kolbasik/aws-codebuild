@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -43,7 +39,15 @@ namespace Lambda2
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddLambdaLogger(Configuration.GetLambdaLoggerOptions());
-            app.UseMvc();
+            var virtualPath = Configuration.GetValue<string>("ASPNETCORE_VIRTUAL_PATH");
+            if (string.IsNullOrWhiteSpace(virtualPath))
+            {
+                app.UseMvc();
+            }
+            else
+            {
+                app.Map(virtualPath, route => route.UseMvc());
+            }
         }
     }
 }
