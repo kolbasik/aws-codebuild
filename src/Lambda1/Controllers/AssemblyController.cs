@@ -1,15 +1,15 @@
 ﻿using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 
-namespace WebApp.Controllers
+namespace Lambda1.Controllers
 {
     [Route("api/[controller]")]
-    public class NameController : Controller
+    public class AssemblyController : Controller
     {
         [HttpGet]
         public string Get()
         {
-            return Assembly.GetEntryAssembly().FullName;
+            return typeof(AssemblyController).GetTypeInfo().Assembly.FullName;
         }
     }
 }
