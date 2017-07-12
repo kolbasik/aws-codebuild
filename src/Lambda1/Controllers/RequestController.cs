@@ -25,7 +25,8 @@ namespace Lambda1.Controllers
                 { nameof(Request.Headers), Request.Headers },
                 { "APIGatewayRequest", proxyRequest },
                 { "LambdaContext", lambdaContext },
-                { nameof(ControllerContext.HttpContext.Items), string.Join(";", ControllerContext.HttpContext.Items.Values) }
+                { "proxy", proxyRequest.PathParameters["proxy"] },
+                { nameof(ControllerContext.HttpContext.Items), string.Join(";", ControllerContext.HttpContext.Items.Keys) }
             });
         }
     }
