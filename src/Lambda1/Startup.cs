@@ -1,13 +1,18 @@
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Lambda1
 {
@@ -68,11 +73,19 @@ namespace Lambda1
                 });
             }
 
-            app.UseMvcWithDefaultRoute();
+            app.UseFileServer(new FileServerOptions
+            {
+                RequestPath = "/kolbasik",
+                EnableDefaultFiles = true,
+                FileProvider = new SwaggerUIFileProvider(new Dictionary<string, string>()),
+                StaticFileOptions = { ContentTypeProvider = new FileExtensionContentTypeProvider() }
+            });
+
             app.UseSwagger().UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("v1/swagger.json", ApplicationName);
             });
+            app.UseMvcWithDefaultRoute();
         }
     }
 }
