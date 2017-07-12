@@ -1,3 +1,4 @@
+using System.Reflection;
 using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -5,12 +6,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Lambda1
 {
     public class Startup
     {
         public const string AppS3BucketKey = "AppS3Bucket";
+        public static readonly string ApplicationName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
         public Startup(IHostingEnvironment env)
         {
@@ -29,6 +32,12 @@ namespace Lambda1
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+            services.AddSwaggerGen(
+                options =>
+                {
+                    options.SwaggerDoc("v1", new Info { Title = ApplicationName, Version = "v1" });
+                    options.DescribeAllEnumsAsStrings();
+                });
 
             // Pull in any SDK configuration from Configuration object
             services.AddDefaultAWSOptions(Configuration.GetAWSOptions());
@@ -42,7 +51,7 @@ namespace Lambda1
         {
             loggerFactory.AddLambdaLogger(Configuration.GetLambdaLoggerOptions());
 
-            if (env.IsProduction())
+            if (env.IsProduction()) // NOTE: hotfix to adjust the api-gateway request to lambda request
             {
                 app.Use((context, next) =>
                 {
@@ -50,20 +59,17 @@ namespace Lambda1
                     if (proxyRequest != null)
                     {
                         context.Request.Path = new PathString("/" + proxyRequest.PathParameters["proxy"]);
+                        context.Request.PathBase = new PathString($"/{proxyRequest.RequestContext.Stage}{proxyRequest.Resource.Substring(0, proxyRequest.Resource.Length - 9)}");
                     }
                     return next();
                 });
             }
+
+            app.UseSwagger().UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("v1/swagger.json", ApplicationName);
+            });
             app.UseMvcWithDefaultRoute();
-            //var virtualPath = Configuration.GetValue<string>("ASPNETCORE_VIRTUAL_PATH");
-            //if (string.IsNullOrWhiteSpace(virtualPath))
-            //{
-            //    app.UseMvc();
-            //}
-            //else
-            //{
-            //    app.Map(virtualPath, route => route.UseMvc());
-            //}
         }
     }
 }
