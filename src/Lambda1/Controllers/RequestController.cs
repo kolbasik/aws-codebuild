@@ -9,6 +9,7 @@ namespace Lambda1.Controllers
         [HttpGet]
         public IActionResult Get()
         {
+
             return Ok(new Dictionary<string, object>
             {
                 { nameof(Request.Method), Request.Method },
@@ -18,6 +19,7 @@ namespace Lambda1.Controllers
                 { nameof(Request.PathBase), Request.PathBase },
                 { nameof(Request.Query), Request.Query },
                 { nameof(Request.Headers), Request.Headers },
+                { nameof(ControllerContext.HttpContext.Items), string.Join(";", ControllerContext.HttpContext.Items.Values) }
             });
         }
     }
