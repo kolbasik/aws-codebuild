@@ -65,11 +65,11 @@ namespace Lambda1
                 });
             }
 
+            app.UseMvcWithDefaultRoute();
             app.UseSwagger().UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("v1/swagger.json", ApplicationName);
             });
-            app.UseMvcWithDefaultRoute();
         }
     }
 }
