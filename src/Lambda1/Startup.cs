@@ -37,7 +37,7 @@ namespace Lambda1
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<RouteOptions>(options => options.AppendTrailingSlash = false);
+            //services.Configure<RouteOptions>(options => options.AppendTrailingSlash = false);
 
             services.AddMvc();
             services.AddSwaggerGen(
@@ -80,18 +80,27 @@ namespace Lambda1
                 FileProvider = new PhysicalFileProvider(env.WebRootPath ?? env.ContentRootPath)
             });
 
+            var indexSettings = new IndexSettings
+            {
+                JSConfig = { SwaggerEndpoints = { new EndpointDescriptor()
+                {
+                    Url = "v1/swagger.json",
+                    Description = ApplicationName
+                }}}
+            };
+
             app.UseFileServer(new FileServerOptions
             {
                 RequestPath = "/kolbasik2",
                 EnableDefaultFiles = true,
-                FileProvider = new SwaggerUIFileProvider(new Dictionary<string, string>())
+                FileProvider = new SwaggerUIFileProvider(indexSettings.ToTemplateParameters())
             });
 
             app.UseFileServer(new FileServerOptions
             {
                 RequestPath = "/kolbasik3",
                 EnableDefaultFiles = false,
-                FileProvider = new SwaggerUIFileProvider(new Dictionary<string, string>())
+                FileProvider = new SwaggerUIFileProvider(indexSettings.ToTemplateParameters())
             });
 
             app.UseSwagger().UseSwaggerUI(options =>
