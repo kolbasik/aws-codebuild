@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.Core;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Lambda1.Controllers
@@ -9,6 +11,8 @@ namespace Lambda1.Controllers
         [HttpGet]
         public IActionResult Get()
         {
+            var proxyRequest = ControllerContext.HttpContext.Items["APIGatewayRequest"] as APIGatewayProxyRequest;
+            var lambdaContext = ControllerContext.HttpContext.Items["LambdaContext"] as ILambdaContext;
 
             return Ok(new Dictionary<string, object>
             {
@@ -19,6 +23,8 @@ namespace Lambda1.Controllers
                 { nameof(Request.PathBase), Request.PathBase },
                 { nameof(Request.Query), Request.Query },
                 { nameof(Request.Headers), Request.Headers },
+                { "APIGatewayRequest", proxyRequest },
+                { "LambdaContext", lambdaContext },
                 { nameof(ControllerContext.HttpContext.Items), string.Join(";", ControllerContext.HttpContext.Items.Values) }
             });
         }
