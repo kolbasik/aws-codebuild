@@ -77,7 +77,7 @@ namespace Lambda1
             {
                 RequestPath = "/kolbasik",
                 EnableDefaultFiles = true,
-                FileProvider = new PhysicalFileProvider(env.WebRootPath),// new SwaggerUIFileProvider(new Dictionary<string, string>()),
+                FileProvider = new PhysicalFileProvider(env.WebRootPath ?? env.ContentRootPath),// new SwaggerUIFileProvider(new Dictionary<string, string>()),
                 StaticFileOptions = { ContentTypeProvider = new FileExtensionContentTypeProvider() }
             });
 
