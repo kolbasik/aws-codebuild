@@ -77,13 +77,26 @@ namespace Lambda1
             {
                 RequestPath = "/kolbasik",
                 EnableDefaultFiles = true,
-                FileProvider = new SwaggerUIFileProvider(new Dictionary<string, string>()),
-                StaticFileOptions = { ContentTypeProvider = new FileExtensionContentTypeProvider() }
+                FileProvider = new PhysicalFileProvider(env.WebRootPath ?? env.ContentRootPath)
+            });
+
+            app.UseFileServer(new FileServerOptions
+            {
+                RequestPath = "/kolbasik2",
+                EnableDefaultFiles = true,
+                FileProvider = new SwaggerUIFileProvider(new Dictionary<string, string>())
+            });
+
+            app.UseFileServer(new FileServerOptions
+            {
+                RequestPath = "/kolbasik3",
+                EnableDefaultFiles = false,
+                FileProvider = new SwaggerUIFileProvider(new Dictionary<string, string>())
             });
 
             app.UseSwagger().UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/v1/swagger.json", ApplicationName);
+                options.SwaggerEndpoint("v1/swagger.json", ApplicationName);
             });
             app.UseMvcWithDefaultRoute();
         }
