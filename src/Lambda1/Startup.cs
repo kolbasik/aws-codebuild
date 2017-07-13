@@ -1,15 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
 using Swashbuckle.AspNetCore.SwaggerUI;
@@ -67,47 +63,47 @@ namespace Lambda1
                     if (proxyRequest != null)
                     {
                         context.Request.Path = new PathString("/" + proxyRequest.PathParameters["proxy"]);
-                        context.Request.PathBase = new PathString($"/{proxyRequest.RequestContext.Stage}{proxyRequest.Resource.Substring(0, proxyRequest.Resource.Length - 9)}");
+                        //context.Request.PathBase = new PathString($"/{proxyRequest.RequestContext.Stage}{proxyRequest.Resource.Substring(0, proxyRequest.Resource.Length - 9)}");
                     }
                     return next();
                 });
             }
-
-            app.UseFileServer(new FileServerOptions
+            app.UseSwagger(options =>
             {
-                RequestPath = "/kolbasik",
-                EnableDefaultFiles = true,
-                FileProvider = new PhysicalFileProvider(env.WebRootPath ?? env.ContentRootPath)
-            });
-
-            var indexSettings = new IndexSettings
-            {
-                JSConfig = { SwaggerEndpoints = { new EndpointDescriptor()
+                options.PreSerializeFilters.Add((swaggerDoc, request) =>
                 {
-                    Url = "v1/swagger.json",
-                    Description = ApplicationName
-                }}}
-            };
-
-            app.UseFileServer(new FileServerOptions
-            {
-                RequestPath = "/kolbasik2",
-                EnableDefaultFiles = true,
-                FileProvider = new SwaggerUIFileProvider(indexSettings.ToTemplateParameters())
-            });
-
-            app.UseFileServer(new FileServerOptions
-            {
-                RequestPath = "/kolbasik3",
-                EnableDefaultFiles = false,
-                FileProvider = new SwaggerUIFileProvider(indexSettings.ToTemplateParameters())
-            });
-
-            app.UseSwagger().UseSwaggerUI(options =>
+                    var proxyRequest = request.HttpContext.Items["APIGatewayRequest"] as APIGatewayProxyRequest;
+                    if (proxyRequest != null)
+                    {
+                        swaggerDoc.BasePath = new PathString($"/{proxyRequest.RequestContext.Stage}{proxyRequest.Resource.Substring(0, proxyRequest.Resource.Length - 9)}");
+                    }
+                });
+            }).UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("v1/swagger.json", ApplicationName);
             });
             app.UseMvcWithDefaultRoute();
+        }
+    }
+
+    internal static class SwaggerUIBuilderExtensions
+    {
+        public static IApplicationBuilder UseSwaggerUI2(this IApplicationBuilder app, Action<SwaggerUIOptions> configure)
+        {
+            var options = new SwaggerUIOptions();
+            configure.Invoke(options);
+            return app.UseFileServer(new FileServerOptions
+            {
+                EnableDefaultFiles = false, // NOTE: to prevent infinite redirects
+                RequestPath = string.Format("/{0}", options.RoutePrefix),
+                FileProvider = new SwaggerUIFileProvider(options.IndexSettings().ToTemplateParameters())
+            });
+        }
+
+        private static IndexSettings IndexSettings(this SwaggerUIOptions options)
+        {
+            var property = typeof(SwaggerUIOptions).GetProperty("IndexSettings", BindingFlags.Instance | BindingFlags.NonPublic);
+            return (IndexSettings)property.GetValue(options);
         }
     }
 }
