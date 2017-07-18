@@ -1,4 +1,3 @@
-using System;
 using System.Reflection;
 using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.AspNetCore.Builder;
@@ -8,7 +7,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.Swagger;
-using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Lambda1
 {
@@ -63,47 +61,30 @@ namespace Lambda1
                     if (proxyRequest != null)
                     {
                         context.Request.Path = new PathString("/" + proxyRequest.PathParameters["proxy"]);
-                        //context.Request.PathBase = new PathString($"/{proxyRequest.RequestContext.Stage}{proxyRequest.Resource.Substring(0, proxyRequest.Resource.Length - 9)}");
                     }
                     return next();
                 });
             }
+            app.UseMvc();
             app.UseSwagger(options =>
             {
-                options.PreSerializeFilters.Add((swaggerDoc, request) =>
+                if (env.IsProduction())
                 {
-                    var proxyRequest = request.HttpContext.Items["APIGatewayRequest"] as APIGatewayProxyRequest;
-                    if (proxyRequest != null)
+                    options.PreSerializeFilters.Add((swaggerDoc, request) =>
                     {
-                        swaggerDoc.BasePath = new PathString($"/{proxyRequest.RequestContext.Stage}{proxyRequest.Resource.Substring(0, proxyRequest.Resource.Length - 9)}");
-                    }
-                });
+                        var proxyRequest = request.HttpContext.Items["APIGatewayRequest"] as APIGatewayProxyRequest;
+                        if (proxyRequest != null)
+                        {
+                            swaggerDoc.BasePath =
+                                new PathString(
+                                    $"/{proxyRequest.RequestContext.Stage}{proxyRequest.Resource.Substring(0, proxyRequest.Resource.Length - 9)}");
+                        }
+                    });
+                }
             }).UseSwaggerUI(options =>
             {
                 options.SwaggerEndpoint("v1/swagger.json", ApplicationName);
             });
-            app.UseMvcWithDefaultRoute();
-        }
-    }
-
-    internal static class SwaggerUIBuilderExtensions
-    {
-        public static IApplicationBuilder UseSwaggerUI2(this IApplicationBuilder app, Action<SwaggerUIOptions> configure)
-        {
-            var options = new SwaggerUIOptions();
-            configure.Invoke(options);
-            return app.UseFileServer(new FileServerOptions
-            {
-                EnableDefaultFiles = false, // NOTE: to prevent infinite redirects
-                RequestPath = string.Format("/{0}", options.RoutePrefix),
-                FileProvider = new SwaggerUIFileProvider(options.IndexSettings().ToTemplateParameters())
-            });
-        }
-
-        private static IndexSettings IndexSettings(this SwaggerUIOptions options)
-        {
-            var property = typeof(SwaggerUIOptions).GetProperty("IndexSettings", BindingFlags.Instance | BindingFlags.NonPublic);
-            return (IndexSettings)property.GetValue(options);
         }
     }
 }

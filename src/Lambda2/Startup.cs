@@ -1,5 +1,7 @@
+using Amazon.Lambda.APIGatewayEvents;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,8 +10,6 @@ namespace Lambda2
 {
     public class Startup
     {
-        public const string AppS3BucketKey = "AppS3Bucket";
-
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -39,15 +39,20 @@ namespace Lambda2
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddLambdaLogger(Configuration.GetLambdaLoggerOptions());
-            var virtualPath = Configuration.GetValue<string>("ASPNETCORE_VIRTUAL_PATH");
-            if (string.IsNullOrWhiteSpace(virtualPath))
+
+            if (env.IsProduction()) // NOTE: hotfix to adjust the api-gateway request to lambda request
             {
-                app.UseMvc();
+                app.Use((context, next) =>
+                {
+                    var proxyRequest = context.Items["APIGatewayRequest"] as APIGatewayProxyRequest;
+                    if (proxyRequest != null)
+                    {
+                        context.Request.Path = new PathString("/" + proxyRequest.PathParameters["proxy"]);
+                    }
+                    return next();
+                });
             }
-            else
-            {
-                app.Map(virtualPath, route => route.UseMvc());
-            }
+            app.UseMvc();
         }
     }
 }
