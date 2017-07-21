@@ -31,8 +31,6 @@ namespace Lambda1
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.Configure<RouteOptions>(options => options.AppendTrailingSlash = false);
-
             services.AddMvc();
             services.AddSwaggerGen(
                 options =>
@@ -75,9 +73,7 @@ namespace Lambda1
                         var proxyRequest = request.HttpContext.Items["APIGatewayRequest"] as APIGatewayProxyRequest;
                         if (proxyRequest != null)
                         {
-                            swaggerDoc.BasePath =
-                                new PathString(
-                                    $"/{proxyRequest.RequestContext.Stage}{proxyRequest.Resource.Substring(0, proxyRequest.Resource.Length - 9)}");
+                            swaggerDoc.BasePath = new PathString($"/{proxyRequest.RequestContext.Stage}{proxyRequest.Resource.Substring(0, proxyRequest.Resource.Length - 9)}");
                         }
                     });
                 }
