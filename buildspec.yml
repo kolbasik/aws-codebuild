@@ -4,8 +4,6 @@ phases:
   install:
     commands:
       - printenv
-      - echo git:"$CODEBUILD_SOURCE_REPO_URL" and branch:"$CODEBUILD_SOURCE_VERSION"
-      - apt-get install zip
   pre_build:
     commands:
       - echo Build started on `date`
@@ -19,13 +17,12 @@ phases:
   post_build:
     commands:
       - echo Build completed on `date`
-      - cd $CODEBUILD_SRC_DIR/src/WebApp/bin/Release/netcoreapp1.1/publish && zip -r $CODEBUILD_SRC_DIR/WebApp.zip .
       - cd $CODEBUILD_SRC_DIR/src/Lambda1/bin/Release/netcoreapp1.0/publish && zip -r $CODEBUILD_SRC_DIR/Lambda1.zip .
       - cd $CODEBUILD_SRC_DIR/src/Lambda2/bin/Release/netcoreapp1.0/publish && zip -r $CODEBUILD_SRC_DIR/Lambda2.zip .
       - cd $CODEBUILD_SRC_DIR
-      - aws cloudformation package --template-file serverless.yml --output-template-file serverless-output.yml --s3-bucket $CLOUDFORMATION_S3BUSKET --s3-prefix $CODEBUILD_INITIATOR
+      - mv -f ./buildspec-2.yml ./buildspec.yml
 artifacts:
-  discard-paths: no
+  discard-paths: yes
   files:
-    - '**/*.zip'
     - '*.yml'
+    - '*.zip'
