@@ -12,7 +12,6 @@ namespace Lambda1
 {
     public class Startup
     {
-        public const string AppS3BucketKey = "AppS3Bucket";
         public static readonly string ApplicationName = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
         public Startup(IHostingEnvironment env)
