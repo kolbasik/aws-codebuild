@@ -16,5 +16,4 @@ phases:
 artifacts:
   discard-paths: yes
   files:
-    - '*.zip'
-    - '*.yml'
+    - 'serverless-output.yml'
