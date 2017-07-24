@@ -1,4 +1,5 @@
 #tool "nuget:?package=GitVersion.CommandLine"
+#addin "Cake.FileHelpers"
 
 var source = "./src";
 var target = "./artifacts";
@@ -15,10 +16,17 @@ Task("Restore").Does(() => {
 });
 
 Task("Build").Does(() => {
-    GitVersion(new GitVersionSettings {
+    var version = GitVersion(new GitVersionSettings {
+        OutputType = GitVersionOutput.Json,
         UpdateAssemblyInfo = true,
         UpdateAssemblyInfoFilePath = source + "/CommonAssamblyInfo.cs"
     });
+    Information("MajorMinorPatch: {0}", version.MajorMinorPatch);
+    Information("FullSemVer: {0}", version.FullSemVer);
+    Information("LegacySemVer: {0}", version.LegacySemVer);
+    Information("InformationalVersion: {0}", version.InformationalVersion);
+    Information("Nuget v2 version: {0}", version.NuGetVersionV2);
+    FileWriteText(File("VERSION"), version.FullSemVer);
     DotNetCoreBuild(source, new DotNetCoreBuildSettings {
         Configuration = "Release"
     });
@@ -29,8 +37,7 @@ Task("Test").Does(() => {
       Configuration = "Release"
   };
   var projectFiles = GetFiles(source + "/test/**/*.csproj");
-  foreach(var file in projectFiles)
-  {
+  foreach(var file in projectFiles) {
       DotNetCoreTest(file.FullPath, settings);
   }
 });
