@@ -4,7 +4,6 @@ var source = "./src";
 var target = "./artifacts";
 
 Task("Clean").Does(() => {
-    //CleanDirectories(new [] { target, source + "/**/bin", source + "/**/obj" });
     CleanDirectories(target);
     CleanDirectories(source + "/**/bin");
     CleanDirectories(source + "/**/obj");
@@ -41,6 +40,7 @@ Task("Publish").Does(() => {
         Configuration = "Release"
     };
     DotNetCorePublish(source, settings);
+    CreateDirectory(target);
     Zip(source + "/Lambda1/bin/Release/netcoreapp1.0/publish", target + "/Lambda1.zip");
     Zip(source + "/Lambda2/bin/Release/netcoreapp1.0/publish", target + "/Lambda2.zip");
     CopyFile("./buildspec-2.yml", target + "/buildspec.yml");
