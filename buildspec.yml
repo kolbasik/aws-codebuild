@@ -4,25 +4,20 @@ phases:
   install:
     commands:
       - printenv
+      - apt-get install mono-runtime mono-complete libmono-system-core4.0-cil
+      - curl -Lsfo cake.sh http://cakebuild.net/download/bootstrapper/linux
+      - chmod +x cake.sh
   pre_build:
     commands:
       - echo Build started on `date`
   build:
     commands:
-      - cd src
-      - dotnet restore
-      - dotnet build -c Release
-      - dotnet publish -c Release
-      - cd ..
+      - ./cake.sh
   post_build:
     commands:
       - echo Build completed on `date`
-      - cd $CODEBUILD_SRC_DIR/src/Lambda1/bin/Release/netcoreapp1.0/publish && zip -r $CODEBUILD_SRC_DIR/Lambda1.zip .
-      - cd $CODEBUILD_SRC_DIR/src/Lambda2/bin/Release/netcoreapp1.0/publish && zip -r $CODEBUILD_SRC_DIR/Lambda2.zip .
-      - cd $CODEBUILD_SRC_DIR
-      - mv -f ./buildspec-2.yml ./buildspec.yml
 artifacts:
-  discard-paths: yes
+  discard-paths: no
+  base-directory: artifacts
   files:
-    - '*.yml'
-    - '*.zip'
+    - '**/*'
