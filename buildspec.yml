@@ -8,10 +8,10 @@ phases:
       - echo "deb http://download.mono-project.com/repo/ubuntu trusty main" | sudo tee /etc/apt/sources.list.d/mono-official.list
       - sudo apt-get update
       - sudo apt-get --yes --force-yes install mono-runtime mono-complete libmono-system-core4.0-cil
-      - curl -Lsfo cake.sh http://cakebuild.net/download/bootstrapper/linux
-      - chmod +x cake.sh
   pre_build:
     commands:
+      - curl -Lsfo cake.sh http://cakebuild.net/download/bootstrapper/linux
+      - chmod +x cake.sh
       - echo Build started on `date`
   build:
     commands:
@@ -20,7 +20,7 @@ phases:
     commands:
       - echo Build completed on `date`
 artifacts:
-  discard-paths: no
   base-directory: artifacts
+  discard-paths: no
   files:
     - '**/*'
