@@ -12,6 +12,7 @@ Task("Clean").Does(() => {
 });
 
 Task("Restore").Does(() => {
+    CreateDirectory(target);
     DotNetCoreRestore(source);
 });
 
@@ -47,7 +48,6 @@ Task("Publish").Does(() => {
         Configuration = "Release"
     };
     DotNetCorePublish(source, settings);
-    CreateDirectory(target);
     Zip(source + "/Lambda1/bin/Release/netcoreapp1.0/publish", target + "/Lambda1.zip");
     Zip(source + "/Lambda2/bin/Release/netcoreapp1.0/publish", target + "/Lambda2.zip");
     CopyFile("./buildspec-2.yml", target + "/buildspec.yml");
