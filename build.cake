@@ -26,7 +26,7 @@ Task("Build").Does(() => {
     Information("LegacySemVer: {0}", version.LegacySemVer);
     Information("InformationalVersion: {0}", version.InformationalVersion);
     Information("Nuget v2 version: {0}", version.NuGetVersionV2);
-    FileWriteText(File("VERSION"), version.FullSemVer);
+    FileWriteText(File(target + "/VERSION"), version.FullSemVer);
     DotNetCoreBuild(source, new DotNetCoreBuildSettings {
         Configuration = "Release"
     });
