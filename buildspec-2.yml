@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Build started on `date`
+  build:
+    commands:
+      - aws cloudformation package --template-file serverless.yml --output-template-file serverless-output.yml --s3-bucket $CLOUDFORMATION_S3BUSKET --s3-prefix $CODEBUILD_INITIATOR
+  post_build:
+    commands:
+      - echo Build completed on `date`
+artifacts:
+  discard-paths: yes
+  files:
+    - 'serverless-output.yml'

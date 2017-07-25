@@ -4,28 +4,23 @@ phases:
   install:
     commands:
       - printenv
-      - echo git:"$CODEBUILD_SOURCE_REPO_URL" and branch:"$CODEBUILD_SOURCE_VERSION"
-      - apt-get install zip
+      - sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
+      - echo "deb http://download.mono-project.com/repo/ubuntu trusty main" | sudo tee /etc/apt/sources.list.d/mono-official.list
+      - sudo apt-get update
+      - sudo apt-get --yes --force-yes install mono-complete
   pre_build:
     commands:
+      - curl -Lsfo cake.sh http://cakebuild.net/download/bootstrapper/linux
+      - chmod +x cake.sh
       - echo Build started on `date`
   build:
     commands:
-      - cd src
-      - dotnet restore
-      - dotnet build -c Release
-      - dotnet publish -c Release
-      - cd ..
+      - ./cake.sh
   post_build:
     commands:
       - echo Build completed on `date`
-      - cd $CODEBUILD_SRC_DIR/src/WebApp/bin/Release/netcoreapp1.1/publish && zip -r $CODEBUILD_SRC_DIR/WebApp.zip .
-      - cd $CODEBUILD_SRC_DIR/src/Lambda1/bin/Release/netcoreapp1.0/publish && zip -r $CODEBUILD_SRC_DIR/Lambda1.zip .
-      - cd $CODEBUILD_SRC_DIR/src/Lambda2/bin/Release/netcoreapp1.0/publish && zip -r $CODEBUILD_SRC_DIR/Lambda2.zip .
-      - cd $CODEBUILD_SRC_DIR
-      - aws cloudformation package --template-file serverless.yml --output-template-file serverless-output.yml --s3-bucket $CLOUDFORMATION_S3BUSKET --s3-prefix $CODEBUILD_INITIATOR
 artifacts:
+  base-directory: artifacts
   discard-paths: no
   files:
-    - '**/*.zip'
-    - '*.yml'
+    - '**/*'
