@@ -34,13 +34,12 @@ Task("Build").Does(() => {
 });
 
 Task("Test").Does(() => {
-  var settings = new DotNetCoreTestSettings {
-      Configuration = "Release"
-  };
-  var projectFiles = GetFiles(source + "/test/**/*.csproj");
-  foreach(var file in projectFiles) {
-      DotNetCoreTest(file.FullPath, settings);
-  }
+    var settings = new DotNetCoreTestSettings {
+        Configuration = "Release"
+    };
+    foreach(var file in GetFiles(source + "/test/**/*.csproj")) {
+        DotNetCoreTest(file.FullPath, settings);
+    }
 });
 
 Task("Publish").Does(() => {
