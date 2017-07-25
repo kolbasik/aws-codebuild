@@ -8,6 +8,7 @@ Task("Clean").Does(() => {
     CleanDirectories(target);
     CleanDirectories(source + "/**/bin");
     CleanDirectories(source + "/**/obj");
+    CleanDirectories(source + "/**/pkg");
     DotNetCoreClean(source);
 });
 
