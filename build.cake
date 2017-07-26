@@ -1,35 +1,37 @@
 #tool "nuget:?package=GitVersion.CommandLine"
 #addin "Cake.FileHelpers"
 
-var source = "./src";
-var target = "./artifacts";
+var src = "./src";
+var dst = "./artifacts";
 
 Task("Clean").Does(() => {
-    CleanDirectories(target);
-    CleanDirectories(source + "/**/bin");
-    CleanDirectories(source + "/**/obj");
-    CleanDirectories(source + "/**/pkg");
-    DotNetCoreClean(source);
+    CleanDirectories(dst);
+    CleanDirectories(src + "/**/bin");
+    CleanDirectories(src + "/**/obj");
+    CleanDirectories(src + "/**/pkg");
+    DotNetCoreClean(src);
 });
 
 Task("Restore").Does(() => {
-    CreateDirectory(target);
-    DotNetCoreRestore(source);
+    EnsureDirectoryExists(dst);
+    DotNetCoreRestore(src);
 });
 
 Task("Build").Does(() => {
     var version = GitVersion(new GitVersionSettings {
         OutputType = GitVersionOutput.Json,
         UpdateAssemblyInfo = true,
-        UpdateAssemblyInfoFilePath = source + "/CommonAssamblyInfo.cs"
+        UpdateAssemblyInfoFilePath = src + "/CommonAssamblyInfo.cs"
     });
-    Information("MajorMinorPatch: {0}", version.MajorMinorPatch);
-    Information("FullSemVer: {0}", version.FullSemVer);
-    Information("LegacySemVer: {0}", version.LegacySemVer);
-    Information("InformationalVersion: {0}", version.InformationalVersion);
-    Information("Nuget v2 version: {0}", version.NuGetVersionV2);
-    FileWriteText(File(target + "/VERSION"), version.FullSemVer);
-    DotNetCoreBuild(source, new DotNetCoreBuildSettings {
+    Information("GitVersion = {");
+    Information("   FullSemVer: {0}", version.FullSemVer);
+    Information("   LegacySemVer: {0}", version.LegacySemVer);
+    Information("   MajorMinorPatch: {0}", version.MajorMinorPatch);
+    Information("   InformationalVersion: {0}", version.InformationalVersion);
+    Information("   Nuget v2 version: {0}", version.NuGetVersionV2);
+    Information("}");
+    FileWriteText(File(dst + "/VERSION"), version.FullSemVer);
+    DotNetCoreBuild(src, new DotNetCoreBuildSettings {
         Configuration = "Release"
     });
 });
@@ -38,7 +40,7 @@ Task("Test").Does(() => {
     var settings = new DotNetCoreTestSettings {
         Configuration = "Release"
     };
-    foreach(var file in GetFiles(source + "/test/**/*.csproj")) {
+    foreach(var file in GetFiles(src + "/test/**/*.csproj")) {
         DotNetCoreTest(file.FullPath, settings);
     }
 });
@@ -47,11 +49,15 @@ Task("Publish").Does(() => {
     var settings = new DotNetCorePublishSettings {
         Configuration = "Release"
     };
-    DotNetCorePublish(source, settings);
-    Zip(source + "/Lambda1/bin/Release/netcoreapp1.0/publish", target + "/Lambda1.zip");
-    Zip(source + "/Lambda2/bin/Release/netcoreapp1.0/publish", target + "/Lambda2.zip");
-    CopyFile("./buildspec-2.yml", target + "/buildspec.yml");
-    CopyFile("./serverless.yml", target + "/serverless.yml");
+    DotNetCorePublish(src, settings);
+    Zip(src + "/Lambda1/bin/Release/netcoreapp1.0/publish", dst + "/Lambda1.zip");
+    Zip(src + "/Lambda2/bin/Release/netcoreapp1.0/publish", dst + "/Lambda2.zip");
+    CopyFile("./buildspec-2.yml", dst + "/buildspec.yml");
+    CopyFile("./serverless.yml", dst + "/serverless.yml");
+    Information("Artifacts:");
+    foreach(var file in GetFiles(dst + "/**/*.*")) {
+        Information(file.FullPath);
+    }
 });
 
 Task("Default")
