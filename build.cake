@@ -21,7 +21,7 @@ Task("Build").Does(() => {
     var version = GitVersion(new GitVersionSettings {
         OutputType = GitVersionOutput.Json,
         UpdateAssemblyInfo = true,
-        UpdateAssemblyInfoFilePath = src + "/CommonAssamblyInfo.cs"
+        UpdateAssemblyInfoFilePath = src + "/CommonAssemblyInfo.cs"
     });
     Information("GitVersion = {");
     Information("   FullSemVer: {0}", version.FullSemVer);
